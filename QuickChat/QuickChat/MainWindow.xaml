@@ -1,0 +1,437 @@
+﻿<Window x:Class="QuickChat.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:converters="clr-namespace:QuickChat.Converters"
+        xmlns:local="clr-namespace:QuickChat"
+        mc:Ignorable="d"
+        Title="QuickChat" Height="600" Width="1000" Icon="/quickchat-social-preview.png">
+    <Window.Resources>
+        <!-- Цвета -->
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#1976D2"/>
+        <SolidColorBrush x:Key="LightBackground" Color="#FAFAFA"/>
+        <SolidColorBrush x:Key="DarkBackground" Color="#F0F0F0"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#E0E0E0"/>
+        <SolidColorBrush x:Key="OnlineBrush" Color="#4CAF50"/>
+        <SolidColorBrush x:Key="OfflineBrush" Color="#9E9E9E"/>
+        <SolidColorBrush x:Key="DangerBrush" Color="#F44336"/>
+        <SolidColorBrush x:Key="MessageInBrush" Color="#FFFFFF"/>
+        <SolidColorBrush x:Key="MessageOutBrush" Color="#DCF8C6"/>
+
+        <!-- Конвертеры -->
+        <converters:OnlineStatusToColorConverter x:Key="OnlineStatusToColorConverter"/>
+        <converters:OnlineStatusToTextConverter x:Key="OnlineStatusToTextConverter"/>
+        <converters:AvatarUrlToImageConverter x:Key="AvatarUrlToImageConverter"/>
+        <converters:CountToVisibilityConverter x:Key="CountToVisibility"/>
+        <BooleanToVisibilityConverter x:Key="BoolToVisibility"/>
+        <!-- Стили -->
+        <Style TargetType="TextBlock">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Foreground" Value="#333333"/>
+        </Style>
+        <!-- Панель настроек -->
+        <Style x:Key="SettingsPanelStyle" TargetType="Border">
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="16" ShadowDepth="0" Opacity="0.2"/>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="Visibility" Value="Collapsed"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding IsSettingsOpen}" Value="True">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="Padding" Value="10"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="Background" Value="White"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="FontSize" Value="14"/>
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Padding" Value="12 6"/>
+            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Margin" Value="4"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"
+                                            Margin="{TemplateBinding Padding}"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="IconButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Width" Value="36"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style x:Key="DangerButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{StaticResource DangerBrush}"/>
+        </Style>
+        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{StaticResource DarkBackground}"/>
+            <Setter Property="Foreground" Value="#333333"/>
+        </Style>
+
+        <!-- Стиль для списка чатов -->
+        <Style x:Key="ChatListItemStyle" TargetType="ListViewItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Padding" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border Background="{TemplateBinding Background}" 
+                                Padding="8">
+                            <ContentPresenter/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource DarkBackground}"/>
+                </Trigger>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Стиль для сообщений -->
+        <Style x:Key="MessageBubbleStyle" TargetType="Border">
+            <Setter Property="CornerRadius" Value="12"/>
+            <Setter Property="Padding" Value="12"/>
+            <Setter Property="Margin" Value="8 4"/>
+            <Setter Property="MaxWidth" Value="400"/>
+            <Setter Property="Background" Value="{Binding BubbleColor}"/>
+            <Setter Property="Effect">
+                <Setter.Value>
+                    <DropShadowEffect BlurRadius="8" ShadowDepth="0" Opacity="0.1"/>
+                </Setter.Value>
+            </Setter>
+        </Style>
+        <Style x:Key="SearchTextBoxStyle" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Grid>
+                            <Border Background="{TemplateBinding Background}" 
+                                BorderBrush="{TemplateBinding BorderBrush}" 
+                                BorderThickness="{TemplateBinding BorderThickness}"/>
+                            <ScrollViewer x:Name="PART_ContentHost" Margin="{TemplateBinding Padding}"/>
+                            <TextBlock x:Name="PlaceholderText" 
+                                   Text="Поиск пользователей..."
+                                   Foreground="Gray"
+                                   Margin="8,0,0,0"
+                                   VerticalAlignment="Center"
+                                   Visibility="Collapsed"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="PlaceholderText" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+
+    <Grid Background="{StaticResource LightBackground}">
+        <!-- Панель настроек -->
+
+        <Border Style="{StaticResource SettingsPanelStyle}" 
+        Panel.ZIndex="1000"
+        HorizontalAlignment="Right" VerticalAlignment="Top"
+        Margin="16" Width="280">
+            <StackPanel>
+                <StackPanel HorizontalAlignment="Center" Margin="0 0 0 16">
+                    <Border Width="80" Height="80" CornerRadius="40" Background="{StaticResource DarkBackground}">
+                        <Image Source="{Binding CurrentUser.AvatarUrl, Converter={StaticResource AvatarUrlToImageConverter}}" 
+                   Stretch="UniformToFill">
+                            <Image.Clip>
+                                <EllipseGeometry RadiusX="40" RadiusY="40" Center="40,40"/>
+                            </Image.Clip>
+                        </Image>
+                    </Border>
+                    <TextBlock Text="{Binding CurrentUser.Username}" 
+                   HorizontalAlignment="Center" 
+                   Margin="0 8 0 0"
+                   FontWeight="Bold"/>
+                </StackPanel>
+                <TextBlock Text="Настройки" FontSize="18" FontWeight="Bold" Margin="0 0 0 12"/>
+
+                <Button Content="Сменить аватар" 
+                        Command="{Binding ChangeAvatarCommand}"
+                        Style="{StaticResource SecondaryButton}"
+                        Margin="0 0 0 8"/>
+
+                <Button Content="Выйти из аккаунта" 
+                        Command="{Binding LogoutCommand}" 
+                        Style="{StaticResource DangerButton}"
+                        Margin="0 0 0 16"/>
+
+                <Button Content="Закрыть" 
+                        Command="{Binding OpenSettingsCommand}"
+                        Style="{StaticResource SecondaryButton}"/>
+            </StackPanel>
+        </Border>
+        <!-- Основной интерфейс -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="320"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <!-- Левая панель - список чатов -->
+            <Border Grid.Column="0" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0 0 1 0">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <!-- Заголовок -->
+                    <Border Grid.Row="0" Background="{StaticResource PrimaryBrush}" Padding="16">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <TextBlock Text="QuickChat" FontSize="20" FontWeight="Bold" Foreground="White"/>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Кнопки управления -->
+                    <Border Grid.Row="1" Background="White" Padding="8" BorderBrush="{StaticResource BorderBrush}" BorderThickness="0 0 0 1">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Поле поиска и результаты -->
+                            <StackPanel Grid.Column="0">
+                                <TextBox Text="{Binding SearchQuery, UpdateSourceTrigger=PropertyChanged}"
+         Style="{StaticResource SearchTextBoxStyle}"
+         Margin="0,0,10,0"/>
+
+                                <ListView ItemsSource="{Binding SearchResults}" 
+          Visibility="{Binding SearchResults.Count, Converter={StaticResource CountToVisibility}}"
+          MouseDoubleClick="SearchResults_MouseDoubleClick">
+                                    <ListView.ItemTemplate>
+                                        <DataTemplate>
+                                            <StackPanel Orientation="Horizontal" Background="Transparent">
+                                                <StackPanel.Style>
+                                                    <Style TargetType="StackPanel">
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding HasExistingChat}" Value="True">
+                                                                <Setter Property="Background" Value="#FFE0E0E0"/>
+                                                                <Setter Property="ToolTip" Value="Чат уже существует"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </StackPanel.Style>
+
+                                                <Image Source="{Binding AvatarUrl, Converter={StaticResource AvatarUrlToImageConverter}}" 
+                   Width="30" Height="30"/>
+
+                                                <TextBlock Text="{Binding Username}" Margin="10,0,0,0">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding HasExistingChat}" Value="True">
+                                                                    <Setter Property="FontStyle" Value="Italic"/>
+                                                                    <Setter Property="Foreground" Value="#FF606060"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+
+
+                                            </StackPanel>
+                                        </DataTemplate>
+                                    </ListView.ItemTemplate>
+                                </ListView>
+                            </StackPanel>
+
+                            <!-- Кнопка нового чата -->
+
+                        </Grid>
+                    </Border>
+                    <!-- Список чатов -->
+                    <ListView Grid.Row="2" 
+                              ItemsSource="{Binding Chats}" 
+                              SelectedItem="{Binding SelectedChat}"
+                              ItemContainerStyle="{StaticResource ChatListItemStyle}"
+                              ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                              BorderThickness="0"
+                              Background="White">
+                        <ListView.ItemTemplate>
+                            <DataTemplate>
+                                <Grid Margin="0 4">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <!-- Аватар -->
+                                    <Border Width="48" Height="48" CornerRadius="24" Background="{StaticResource DarkBackground}">
+                                        <Image Source="{Binding Avatar, Converter={StaticResource AvatarUrlToImageConverter}}" Stretch="UniformToFill">
+                                            <Image.Clip>
+                                                <EllipseGeometry RadiusX="24" RadiusY="24" Center="24,24"/>
+                                            </Image.Clip>
+                                        </Image>
+                                    </Border>
+
+                                    <!-- Информация о чате -->
+                                    <StackPanel Grid.Column="1" Margin="12 0 0 0" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding Name}" FontWeight="Bold" FontSize="15"/>
+                                        <TextBlock Text="{Binding LastMessagePreview}" 
+                                                   Foreground="#666666" 
+                                                   TextTrimming="CharacterEllipsis"
+                                                   FontSize="13"/>
+                                    </StackPanel>
+
+                                    <!-- Время и статус -->
+                                </Grid>
+                            </DataTemplate>
+                        </ListView.ItemTemplate>
+                    </ListView>
+                   
+                    <Button Command="{Binding OpenSettingsCommand}" 
+                                    Style="{StaticResource IconButton}" Margin="259,15,24,15">
+                        <Button.Background>
+                            <ImageBrush ImageSource="/icons8-меню-40.png"/>
+                        </Button.Background>
+                    </Button>
+                </Grid>
+            </Border>
+
+            <!-- Правая панель - чат -->
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Заголовок чата -->
+                <Border Grid.Row="0" 
+                        Background="White" 
+                        Padding="16"
+                        BorderBrush="{StaticResource BorderBrush}" 
+                        BorderThickness="0 0 0 1">
+                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Аватар -->
+                        <Border Width="40" Height="40" CornerRadius="20" Background="{StaticResource DarkBackground}">
+                            <Image Source="{Binding SelectedChat.Avatar, Converter={StaticResource AvatarUrlToImageConverter}}" Stretch="UniformToFill">
+                                <Image.Clip>
+                                    <EllipseGeometry RadiusX="20" RadiusY="20" Center="20,20"/>
+                                </Image.Clip>
+                            </Image>
+                        </Border>
+                        <!-- Информация о собеседнике -->
+                        <StackPanel Margin="12 0 0 0" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding SelectedChat.Name}" FontWeight="Bold" FontSize="16"/>
+                            <TextBlock Foreground="{Binding SelectedChat.IsOnline, Converter={StaticResource OnlineStatusToColorConverter}}"
+                                       Text="{Binding SelectedChat.IsOnline, Converter={StaticResource OnlineStatusToTextConverter}}"
+                                       FontSize="13"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- Сообщения -->
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="16">
+                    <ItemsControl x:Name="MessagesItemsControl" ItemsSource="{Binding Messages}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Margin="0 4" 
+                            HorizontalAlignment="{Binding MessageAlignment}">
+                                    <Border Style="{StaticResource MessageBubbleStyle}"
+                            Background="{Binding BubbleColor}">
+                                        <StackPanel>
+                                            <!-- Отображаем имя отправителя только для входящих -->
+                                            <TextBlock Text="{Binding Sender.Username}" 
+                                       FontWeight="Bold"
+                                       Visibility="{Binding IsIncoming, Converter={StaticResource BoolToVisibility}}"
+                                       Margin="0 0 0 4"/>
+                                            <TextBlock Text="{Binding Text}" 
+                                       TextWrapping="Wrap"
+                                       FontSize="15"/>
+                                            <StackPanel Orientation="Horizontal" 
+                                        HorizontalAlignment="Right"
+                                        Margin="0 4 0 0">
+
+                                                <TextBlock Text="{Binding FormattedTime}" 
+                                           FontSize="11" 
+                                           Foreground="#666666"/>
+
+                                                <!-- Статус прочтения только для исходящих сообщений -->
+                                                <TextBlock Text="{Binding ReadStatusIcon}" 
+                                           FontSize="11" 
+                                           Foreground="{Binding ReadStatusColor}" 
+                                           Margin="4 0 0 0"
+                                           Visibility="{Binding ReadStatusVisibility}"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+
+                <!-- Поле ввода -->
+                <Border Grid.Row="2" 
+                        Background="White" 
+                        Padding="16"
+                        BorderBrush="{StaticResource BorderBrush}" 
+                        BorderThickness="0 1 0 0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+
+                        <TextBox Grid.Column="0" 
+                                 Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}"
+                                 AcceptsReturn="True" 
+                                 VerticalScrollBarVisibility="Auto"
+                                 MinHeight="40" 
+                                 VerticalAlignment="Center"
+                                 FontSize="15"/>
+
+                        <Button Grid.Column="1" 
+                                Content="Отправить" 
+                                Command="{Binding SendMessageCommand}"
+                                MinWidth="100"
+                                Margin="12 0 0 0"
+                                IsDefault="True"/>
+                    </Grid>
+                </Border>
+            </Grid>
+        </Grid>
+    </Grid>
+</Window>

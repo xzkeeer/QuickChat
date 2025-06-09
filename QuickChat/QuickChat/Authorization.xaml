@@ -1,0 +1,243 @@
+﻿<Window x:Class="QuickChat.Authorization"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QuickChat"
+          xmlns:converters="clr-namespace:QuickChat.Converters"
+        mc:Ignorable="d"
+        Title="QuickChat" Height="600" Width="400" Icon="/quickchat-social-preview.png">
+    <Window.Resources>
+       
+        <!-- Цветовая палитра -->
+        <SolidColorBrush x:Key="PrimaryBrush" Color="#FF4B6CDB"/>
+        <SolidColorBrush x:Key="PrimaryLightBrush" Color="#FF6E8EFB"/>
+        <SolidColorBrush x:Key="BackgroundBrush" Color="#FFF5F5F5"/>
+        <SolidColorBrush x:Key="CardBrush" Color="#FFFFFFFF"/>
+        <SolidColorBrush x:Key="TextBrush" Color="#FF333333"/>
+        <SolidColorBrush x:Key="HintBrush" Color="#FF999999"/>
+        <SolidColorBrush x:Key="ErrorBrush" Color="#FFEB5757"/>
+
+        <!-- Стили текста -->
+        <Style x:Key="TitleText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="24"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Setter Property="Margin" Value="0,0,0,20"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="HintText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{StaticResource HintBrush}"/>
+            <Setter Property="Margin" Value="0,5,0,0"/>
+        </Style>
+
+        <Style x:Key="ErrorText" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="{StaticResource ErrorBrush}"/>
+            <Setter Property="Margin" Value="0,5,0,0"/>
+            <Setter Property="Visibility" Value="Collapsed"/>
+        </Style>
+
+        <!-- Стиль для текстовых полей -->
+        <Style x:Key="MaterialTextBox" TargetType="TextBox">
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource HintBrush}"/>
+            <Setter Property="Padding" Value="0,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Стиль для PasswordBox -->
+        <Style x:Key="MaterialPasswordBox" TargetType="PasswordBox">
+            <Setter Property="BorderThickness" Value="0,0,0,1"/>
+            <Setter Property="BorderBrush" Value="{StaticResource HintBrush}"/>
+            <Setter Property="Padding" Value="0,10"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="{StaticResource TextBrush}"/>
+            <Style.Triggers>
+                <Trigger Property="IsFocused" Value="True">
+                    <Setter Property="BorderBrush" Value="{StaticResource PrimaryBrush}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Стиль для кнопок -->
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource PrimaryBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="Padding" Value="15,10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" 
+                                CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" 
+                                            VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="{StaticResource PrimaryLightBrush}"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#FFCCCCCC"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Стиль для TabControl -->
+        <Style x:Key="MaterialTabControl" TargetType="TabControl">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="TabStripPlacement" Value="Top"/>
+        </Style>
+
+        <Style x:Key="MaterialTabItem" TargetType="TabItem">
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="Foreground" Value="{StaticResource HintBrush}"/>
+            <Setter Property="Padding" Value="15,10"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TabItem">
+                        <Grid>
+                            <Border Name="Border" Background="Transparent" Margin="0,0,0,0">
+                                <ContentPresenter x:Name="ContentSite"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"
+                                    ContentSource="Header"
+                                    Margin="12,2,12,2"
+                                    RecognizesAccessKey="True"/>
+                            </Border>
+                            <Rectangle Height="3" Fill="{StaticResource PrimaryBrush}" VerticalAlignment="Bottom"
+                                       Margin="0,0,0,-1" Visibility="Collapsed"/>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsSelected" Value="True">
+                                <Setter Property="Foreground" Value="{StaticResource PrimaryBrush}"/>
+                                <Setter TargetName="Border" Property="Background" Value="Transparent"/>
+                                <Setter Property="Rectangle.Visibility" Value="Visible"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Эффект тени -->
+        <DropShadowEffect x:Key="ShadowEffect" BlurRadius="15" ShadowDepth="0" Color="#40000000" Opacity="0.2"/>
+
+        <!-- Аватар по умолчанию -->
+        <ImageSource x:Key="DefaultAvatar">/0259543779b1c2db9ba9d62d47e11880.jpg/</ImageSource>
+    </Window.Resources>
+    <Window.Background>
+        <ImageBrush ImageSource="/default_avatar.png"/>
+    </Window.Background>
+
+    <Grid Background="{StaticResource BackgroundBrush}">
+        <!-- Анимированный фон -->
+        <Border>
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#FF6E8EFB" Offset="0"/>
+                    <GradientStop Color="#FF4B6CDB" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
+        </Border>
+
+        <!-- Карточка формы -->
+        <Border Width="350" Height="500" CornerRadius="10" 
+                Background="{StaticResource CardBrush}" 
+                Effect="{StaticResource ShadowEffect}"
+                VerticalAlignment="Center" HorizontalAlignment="Center">
+            <StackPanel Margin="30" VerticalAlignment="Center">
+
+
+                <!-- Вкладки -->
+                <TabControl x:Name="AuthTabs" Style="{StaticResource MaterialTabControl}">
+                    <TabItem Header="Вход" Style="{StaticResource MaterialTabItem}">
+                        <StackPanel>
+                            <TextBlock Text="Логин" Style="{StaticResource HintText}"/>
+                            <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}" 
+                 Style="{StaticResource MaterialTextBox}"/>
+
+                            <TextBlock Text="Пароль" Style="{StaticResource HintText}" Margin="0,10,0,0"/>
+                            <PasswordBox x:Name="LoginPasswordBox" 
+                     PasswordChanged="LoginPassword_PasswordChanged"
+                     Style="{StaticResource MaterialPasswordBox}"/>
+
+                            <Button Content="Войти" 
+                Command="{Binding LoginCommand}"
+                Style="{StaticResource PrimaryButton}" 
+                Margin="0,20" Height="36"/>
+                        </StackPanel>
+                    </TabItem>
+                    <TabItem Header="Регистрация" Style="{StaticResource MaterialTabItem}">
+                        <ScrollViewer VerticalScrollBarVisibility="Auto" MaxHeight="350">
+                            <StackPanel>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Имя" Style="{StaticResource HintText}"/>
+                                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+         Style="{StaticResource MaterialTextBox}" Margin="0,0,0,15"/>
+                                        <TextBlock x:Name="RegisterNameError" Style="{StaticResource ErrorText}"/>
+                                        <TextBlock Text="Логин" Style="{StaticResource HintText}"/>
+                                        <TextBox Text="{Binding Username, UpdateSourceTrigger=PropertyChanged}"
+         Style="{StaticResource MaterialTextBox}" Margin="0,0,0,15"/>
+                                        <TextBlock x:Name="RegisterUsernameError" Style="{StaticResource ErrorText}"/>
+
+                                        <TextBlock Text="Пароль" Style="{StaticResource HintText}"/>
+                                        <PasswordBox x:Name="PasswordBox" Style="{StaticResource MaterialPasswordBox}" 
+             PasswordChanged="PasswordBox_PasswordChanged"/>
+                                        <TextBlock x:Name="RegisterPasswordError" Style="{StaticResource ErrorText}"/>
+                                    </StackPanel>
+
+
+                                    <StackPanel Grid.Column="1" Margin="15,0,0,0" HorizontalAlignment="Center">
+                                        <Border Width="78" Height="80" CornerRadius="40" Background="#EEE" 
+            BorderBrush="{StaticResource HintBrush}" BorderThickness="1">
+                                            <Image x:Name="AvatarImage" 
+       Source="{Binding AvatarUrl}"
+       Stretch="UniformToFill">
+                                                <Image.Clip>
+                                                    <EllipseGeometry Center="40,40" RadiusX="40" RadiusY="40"/>
+                                                </Image.Clip>
+                                            </Image>
+                                        </Border>
+                                        <Button Content="Выбрать аватар" Margin="0,10,0,0" 
+            Style="{StaticResource PrimaryButton}" Padding="10,5"
+            Click="SelectAvatar_Click" Height="26"/>
+                                    </StackPanel>
+                                </Grid>
+
+                                <Button Content="Зарегистрироваться" Style="{StaticResource PrimaryButton}" 
+                                        Margin="0,20" Click="Register_Click" Height="32"/>
+                            </StackPanel>
+                        </ScrollViewer>
+                    </TabItem>
+                </TabControl>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>

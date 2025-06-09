@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="default_avatar.png" />
+    <None Remove="icons8-меню-40.png" />
+    <None Remove="PinClipart.com_menu-clip-art_5328945.png" />
+    <None Remove="quickchat-social-preview.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="default_avatar.png" />
+    <Resource Include="icons8-меню-40.png" />
+    <Resource Include="Image\icons8-меню-40.png" />
+    <Resource Include="Image\PinClipart.com_menu-clip-art_5328945.png" />
+    <Resource Include="Image\quickchat-social-preview.png" />
+    <Resource Include="quickchat-social-preview.png" />
+  </ItemGroup>
+
+</Project>
