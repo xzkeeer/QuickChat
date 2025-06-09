@@ -62,4 +62,5 @@
 - **MainViewModel**: Основная бизнес-логика мессенджера
 - **BaseViewModel**: Базовый класс с INotifyPropertyChanged
 
+Ссылка на Api: https://github.com/xzkeeer/ApiForQuickChat
 
